@@ -7,7 +7,7 @@ It provides two distinct, high-performance methods to achieve a "fluid" backgrou
 -----
 
 ## Visual Showcase
-[assets/Screen_recording_20250730_161651.gif](https://github.com/mahmoud-dev01/ProjectFluid/blob/master/assets/Screen_recording_20250730_161651.gif?raw=true)
+https://github.com/mahmoud-dev01/ProjectFluid/blob/master/assets/Screen_recording_20250730_161651.gif?raw=true
 
 
 -----
