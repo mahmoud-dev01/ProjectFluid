@@ -84,10 +84,6 @@ class FlavorDrawable : Drawable() {
     // Holds the cached shader. This is key to the performance optimization.
     private var shader: Shader? = null
 
-    /** Determines whether to draw a solid color or a gradient. */
-    var useSolidColor: Boolean = false
-        private set
-
     var theme: Theme = Theme.CANDY
         set(value) {
             field = value
@@ -98,7 +94,6 @@ class FlavorDrawable : Drawable() {
     var color: Int = Color.TRANSPARENT
         set(value) {
             field = value
-            useSolidColor = false
             resetShader()
         }
 
@@ -106,7 +101,6 @@ class FlavorDrawable : Drawable() {
     var gradientType: Int = GradientType.LINEAR
         set(value) {
             field = value
-            useSolidColor = false
             resetShader()
         }
 
@@ -114,7 +108,6 @@ class FlavorDrawable : Drawable() {
     var startColor: Int = Color.WHITE
         set(value) {
             field = value
-            useSolidColor = false
             resetShader()
         }
 
@@ -122,7 +115,6 @@ class FlavorDrawable : Drawable() {
     var centerColor: Int? = null
         set(value) {
             field = value
-            useSolidColor = false
             resetShader()
         }
 
@@ -130,7 +122,6 @@ class FlavorDrawable : Drawable() {
     var endColor: Int = Color.BLACK
         set(value) {
             field = value
-            useSolidColor = false
             resetShader()
         }
 
@@ -138,14 +129,12 @@ class FlavorDrawable : Drawable() {
     var direction: Int = Direction.TOP_BOTTOM
         set(value) {
             field = value
-            useSolidColor = false
             resetShader()
         }
 
     var cornerRadius: Float = 0.0F
         set(value) {
             field = value
-            useSolidColor = false
             // Changing the corner radius doesn't require recreating the shader, just a redraw.
             invalidateSelf()
         }
@@ -154,7 +143,6 @@ class FlavorDrawable : Drawable() {
     var centerX: Float = 0.5F
         set(value) {
             field = value
-            useSolidColor = false
             resetShader()
         }
 
@@ -162,7 +150,6 @@ class FlavorDrawable : Drawable() {
     var centerY: Float = 0.5F
         set(value) {
             field = value
-            useSolidColor = false
             resetShader()
         }
 
@@ -182,7 +169,6 @@ class FlavorDrawable : Drawable() {
         color = Color.TRANSPARENT
         gradientType = GradientType.LINEAR
         centerColor = null
-        useSolidColor = false // Default to gradient
 
         when (theme) {
             Theme.BERRY -> {
@@ -215,39 +201,38 @@ class FlavorDrawable : Drawable() {
                 endColor = "#0ee6b7".toColorInt()
             }
             // Single-color themes
-            else -> {
-                useSolidColor = true
-                color = when (theme) {
-                    Theme.DEFAULT_BLUE -> "#0084ff".toColorInt()
-                    Theme.YELLOW -> "#ffc300".toColorInt()
-                    Theme.RED -> "#fa3c4c".toColorInt()
-                    Theme.GREEN -> "#13cf13".toColorInt()
-                    Theme.ORANGE -> "#ff7e29".toColorInt()
-                    Theme.TEAL_BLUE -> "#44bec7".toColorInt()
-                    Theme.LAVENDER_PURPLE -> "#d696bb".toColorInt()
-                    Theme.CORAL_PINK -> "#e68585".toColorInt()
-                    Theme.BRIGHT_PURPLE -> "#7646ff".toColorInt()
-                    Theme.AQUA_BLUE -> "#20cef5".toColorInt()
-                    Theme.HOT_PINK -> "#ff5ca1".toColorInt()
-                    else -> Color.TRANSPARENT // Should not happen
-                }
-            }
-
+            Theme.DEFAULT_BLUE -> color = "#0084ff".toColorInt()
+            Theme.YELLOW -> color = "#ffc300".toColorInt()
+            Theme.RED -> color = "#fa3c4c".toColorInt()
+            Theme.GREEN -> color = "#13cf13".toColorInt()
+            Theme.ORANGE -> color = "#ff7e29".toColorInt()
+            Theme.TEAL_BLUE -> color = "#44bec7".toColorInt()
+            Theme.LAVENDER_PURPLE -> color = "#d696bb".toColorInt()
+            Theme.CORAL_PINK -> color = "#e68585".toColorInt()
+            Theme.BRIGHT_PURPLE -> color = "#7646ff".toColorInt()
+            Theme.AQUA_BLUE -> color = "#20cef5".toColorInt()
+            Theme.HOT_PINK -> color = "#ff5ca1".toColorInt()
         }
         // After applying a new theme, the shader must be recreated.
         resetShader()
     }
 
     override fun draw(canvas: Canvas) {
-        if (useSolidColor) {
+        // Lazily create the shader only when it's needed and not already cached.
+        if (shader == null) {
+            updateShader()
+        }
+
+        // Apply the shader to the Paint object.
+        flavorPaint.shader = if (gradientType == -1) null else shader
+
+        // If a solid color is specified, it overrides any gradient.
+        if (color != Color.TRANSPARENT) {
             flavorPaint.shader = null
             flavorPaint.color = color
-        } else {
-            if (shader == null) {
-                updateShader()
-            }
-            flavorPaint.shader = shader
         }
+
+        // Draw the final shape.
         canvas.drawRoundRect(flavorRectF, cornerRadius, cornerRadius, flavorPaint)
     }
 
@@ -284,9 +269,9 @@ class FlavorDrawable : Drawable() {
     }
 
     private fun createLinearGradient(colors: IntArray, positions: FloatArray?): Shader {
-        val x0: Float
-        val y0: Float
-        val x1: Float
+        val x0: Float;
+        val y0: Float;
+        val x1: Float;
         val y1: Float
 
         when (direction) {

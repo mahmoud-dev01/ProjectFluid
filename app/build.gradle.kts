@@ -49,5 +49,5 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation("com.github.mahmoud-dev01:ProjectFluid:1.0.1")
+    implementation(project(":Fluid"))
 }

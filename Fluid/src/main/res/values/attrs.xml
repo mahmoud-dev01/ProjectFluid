@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--
-        Defines the custom attributes for the StaticBackgroundListLayout.
+        Defines the custom attributes for the RevealingBackgroundLayout.
         This allows developers to specify the IDs of the required child views
         directly from their XML layout.
     -->
-    <declare-styleable name="StaticBackgroundListLayout">
+    <declare-styleable name="RevealingBackgroundLayout">
         <!-- A reference to the ImageView that will be used for the background. -->
         <attr name="backgroundImageId" format="reference" />
         <!-- A reference to the RecyclerView that will display the content. -->
