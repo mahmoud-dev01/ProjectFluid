@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Use the flexible RevealingBackgroundLayout from your library -->
+    <io.github.mahmoud_dev01.fluid.RevealingBackgroundLayout
+        android:id="@+id/revealingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/inputLayout"
+        app:backgroundImageId="@+id/chat_background"
+        app:recyclerViewId="@+id/chat_list">
+
+        <!-- You provide the children, the layout manages them -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/chat_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chat_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false" />
+
+    </io.github.mahmoud_dev01.fluid.RevealingBackgroundLayout>
+
+    <LinearLayout
+        android:id="@+id/inputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurfaceContainer"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Type a message"/>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

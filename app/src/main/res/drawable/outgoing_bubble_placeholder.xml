@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!--
+        This is just a placeholder color for the layout editor.
+        The actual gradient will be drawn by the ItemDecoration from your library.
+    -->
+    <solid android:color="#007AFF" />
+
+    <!-- The default rounded corners for the bubble -->
+    <corners android:radius="20dp" />
+</shape>

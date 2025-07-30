@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Defines the custom attributes for the RevealingBackgroundLayout.
+        This allows developers to specify the IDs of the required child views
+        directly from their XML layout.
+    -->
+    <declare-styleable name="RevealingBackgroundLayout">
+        <!-- A reference to the ImageView that will be used for the background. -->
+        <attr name="backgroundImageId" format="reference" />
+        <!-- A reference to the RecyclerView that will display the content. -->
+        <attr name="recyclerViewId" format="reference" />
+    </declare-styleable>
+    <!--
+    Defines the custom attributes for the MaskingLayout.
+    This allows developers to specify the target child view and the mask's
+    corner radius directly from their XML layout.
+    -->
+    <declare-styleable name="MaskingLayout">
+        <!-- A reference to the child View that will be used as the clipping mask. -->
+        <attr name="child_id" format="reference" />
+        <!-- The corner radius for the transparent mask. -->
+        <attr name="maskCornerRadius" format="dimension" />
+    </declare-styleable>
+</resources>
