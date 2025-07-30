@@ -59,8 +59,8 @@ class DecorationStyle(
  */
 class ClippingGradientDecoration(
     private val style: DecorationStyle,
-    private val primaryViewType: Int,
-    private val secondaryViewType: Int
+    private val primaryViewTypes: Set<Int>,
+    private val secondaryViewTypes: Set<Int>
 ) : RecyclerView.ItemDecoration() {
 
     // Reusable objects to avoid allocations during drawing operations.
@@ -68,6 +68,7 @@ class ClippingGradientDecoration(
     private val rectF = RectF()
     private val groupedCornerRadiusF = style.groupedCornerRadius.toFloat()
     private val regularCornerRadiusF = style.regularCornerRadius.toFloat()
+    private val targetViewTypes = primaryViewTypes + secondaryViewTypes
 
     /**
      * Draws the backgrounds under the items in the RecyclerView.
@@ -82,9 +83,7 @@ class ClippingGradientDecoration(
             val itemViewType = holder.itemViewType
 
             // Skip any view types that are not targeted by this decoration.
-            if (itemViewType != primaryViewType && itemViewType != secondaryViewType) {
-                continue
-            }
+            if (itemViewType !in targetViewTypes) continue
 
             val targetView = (holder as ClippingTargetViewHolder).clippingTarget
             val position = holder.adapterPosition
@@ -105,25 +104,21 @@ class ClippingGradientDecoration(
             rectF.set(x, y, x + targetView.width, y + targetView.height)
 
             // Determine the corner radii based on adjacent items to create a "grouped" effect.
-            if (itemViewType == primaryViewType) {
+            if (itemViewType in primaryViewTypes) {
                 path.addRoundRect(
                     rectF,
                     regularCornerRadiusF, // Top-Left
-                    if (prevItemIsSameType) groupedCornerRadiusF
-                    else regularCornerRadiusF, // Top-Right
-                    if (nextItemIsSameType) groupedCornerRadiusF
-                    else regularCornerRadiusF,  // Bottom-Right
+                    if (prevItemIsSameType) groupedCornerRadiusF else regularCornerRadiusF, // Top-Right
+                    if (nextItemIsSameType) groupedCornerRadiusF else regularCornerRadiusF,  // Bottom-Right
                     regularCornerRadiusF // Bottom-Left
                 )
             } else {
                 path.addRoundRect(
                     rectF,
-                    if (prevItemIsSameType) groupedCornerRadiusF
-                    else regularCornerRadiusF, // Top-Left
+                    if (prevItemIsSameType) groupedCornerRadiusF else regularCornerRadiusF, // Top-Left
                     regularCornerRadiusF, // Top-Right
                     regularCornerRadiusF, // Bottom-Right
-                    if (nextItemIsSameType) groupedCornerRadiusF
-                    else regularCornerRadiusF  // Bottom-Left
+                    if (nextItemIsSameType) groupedCornerRadiusF else regularCornerRadiusF  // Bottom-Left
                 )
             }
             path.close()
@@ -132,7 +127,7 @@ class ClippingGradientDecoration(
             c.withSave {
                 clipPath(path)
 
-                val drawable = if (itemViewType == primaryViewType) {
+                val drawable = if (itemViewType in primaryViewTypes) {
                     style.primaryBackground
                 } else {
                     style.secondaryBackground
@@ -160,9 +155,7 @@ class ClippingGradientDecoration(
         val holder = parent.findContainingViewHolder(view) ?: return
         val itemViewType = holder.itemViewType
 
-        if (itemViewType != primaryViewType && itemViewType != secondaryViewType) {
-            return
-        }
+        if (itemViewType !in targetViewTypes) return
 
         val position = holder.adapterPosition
         if (position == RecyclerView.NO_POSITION) return

@@ -39,11 +39,11 @@ class MainActivity : AppCompatActivity() {
         setupSendButton()
 
         // Use the powerful and reusable utility from your library to manage all keyboard interactions.
-        setupKeyboardInsetsListener(
+        /*setupKeyboardInsetsListener(
             rootView = binding.main,
             scrollView = binding.recyclerView,
             inputView = binding.inputLayout
-        )
+        )*/
 
     }
 
