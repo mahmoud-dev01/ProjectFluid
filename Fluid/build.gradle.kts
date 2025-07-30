@@ -1,3 +1,5 @@
+import java.io.File
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -41,4 +43,32 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+fun String.runCommand(workingDir: File = project.rootDir): Process {
+    return ProcessBuilder(split(" "))
+        .directory(workingDir)
+        .redirectOutput(ProcessBuilder.Redirect.PIPE)
+        .redirectError(ProcessBuilder.Redirect.PIPE)
+        .start()
+}
+
+fun getVersionName(): String {
+    val process = "git describe --tags --abbrev=0".runCommand()
+    process.waitFor()
+    return process.inputStream.bufferedReader().readText().trim()
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                groupId = "com.github.mahmoud-dev01"
+                artifactId = "Fluid"
+                version = getVersionName()
+
+                from(components.getByName("release"))
+            }
+        }
+    }
 }
