@@ -63,4 +63,14 @@ class ChatAdapter(
     }
 
     override fun getItemCount(): Int = messages.size
+
+    /**
+     * Adds a new message to the list and notifies the adapter.
+     * @param message The new message to add.
+     */
+    fun addMessage(message: Message) {
+        messages.add(message)
+        // Notify the adapter that an item was inserted at the last position
+        notifyItemInserted(messages.size - 1)
+    }
 }

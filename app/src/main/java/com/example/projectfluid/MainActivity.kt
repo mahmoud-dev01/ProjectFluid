@@ -1,6 +1,8 @@
 package com.example.projectfluid
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 //import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var chatAdapter: ChatAdapter
+    private val messagesList = sampleTexts() // Store the list here to modify it
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +35,8 @@ class MainActivity : AppCompatActivity() {
         }*/
 
         setupRecyclerViewAndDecoration()
+        setupKeyboardInsetsListener(binding.main, binding.recyclerView, binding.inputLayout)
+        setupSendButton()
 
         // Use the powerful and reusable utility from your library to manage all keyboard interactions.
         setupKeyboardInsetsListener(
@@ -43,36 +48,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerViewAndDecoration() {
-        chatAdapter = ChatAdapter(this, sampleTexts())
+        chatAdapter = ChatAdapter(this, messagesList)
         binding.recyclerView.layoutManager = LinearLayoutManager(this).apply {
             stackFromEnd = true
         }
         binding.recyclerView.adapter = chatAdapter
 
-        // --- Showcase the power of your Fluid library ---
-
-        // 1. Create the background for outgoing messages using FlavorDrawable.
-        //    You can change the theme to BERRY, CITRUS, etc., with one line!
+        // --- Library Showcase ---
         val outgoingBackground = FlavorDrawable().apply {
             theme = FlavorDrawable.Theme.CANDY
         }
-
-        // 2. Create the background for incoming messages.
         val incomingBackground = FlavorDrawable().apply {
-            theme = FlavorDrawable.Theme.TEAL_BLUE
+            theme = FlavorDrawable.Theme.DEFAULT_BLUE
         }
-
-        // 3. Create the configuration object for the decoration.
         val decorationStyle = DecorationStyle(
-            groupedMargin = dpToPx(18), // 4
-            regularMargin = dpToPx(18), // 12
-            groupedCornerRadius = dpToPx(22), // 8
-            regularCornerRadius = dpToPx(28), // 20
+            groupedMargin = dpToPx(4),
+            regularMargin = dpToPx(12),
+            groupedCornerRadius = dpToPx(8),
+            regularCornerRadius = dpToPx(20),
             primaryBackground = outgoingBackground,
             secondaryBackground = incomingBackground
         )
-
-        // 4. Add the decoration from your library to the RecyclerView.
         binding.recyclerView.addItemDecoration(
             ClippingGradientDecoration(
                 style = decorationStyle,
@@ -80,6 +76,36 @@ class MainActivity : AppCompatActivity() {
                 secondaryViewType = ChatAdapter.INCOMING_MESSAGE_TYPE
             )
         )
+    }
+
+    /**
+     * Sets up the click listener for the send button.
+     */
+    private fun setupSendButton() {
+        binding.sendButton.setOnClickListener {
+            val messageText = binding.editText.text.toString().trim()
+            if (messageText.isNotEmpty()) {
+                // Add the user's message
+                val newMessage = Message(messageText, isMine = true)
+                chatAdapter.addMessage(newMessage)
+                binding.recyclerView.scrollToPosition(chatAdapter.itemCount - 1)
+                binding.editText.text.clear()
+
+                // Simulate a reply after a short delay
+                simulateReply()
+            }
+        }
+    }
+
+    /**
+     * Simulates a reply from the other user after 1 second.
+     */
+    private fun simulateReply() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            val replyMessage = Message("Thanks for the message!", isMine = false)
+            chatAdapter.addMessage(replyMessage)
+            binding.recyclerView.scrollToPosition(chatAdapter.itemCount - 1)
+        }, 11000)
     }
 
 }
